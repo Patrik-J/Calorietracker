@@ -4,6 +4,9 @@ import 'package:flutter/services.dart';
 import 'calorie_indicator.dart';
 import 'dart:io';
 import 'setup.dart';
+import 'watertank.dart';
+import 'package:water_bottle/water_bottle.dart';
+
 
 void main() {
   //  Setup.initSetup();
@@ -20,6 +23,9 @@ const double heightConstant = 0.25;
 const double spacingConstant = 0.05;
 double? _userScreenWidth;
 double caloriePercentage = 0.4;
+
+
+const waterGoal = 3.0;
 
 
 ///JSON stuff
@@ -60,6 +66,19 @@ class _BasicPageState extends State<BasicPage> {
   int selectedIndex = 0;
 
 
+  void _onItemTapped(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
+  static const List<Widget> _widgetOptions = <Widget>[
+    HomePage(),
+    MePage(),
+    ActPage(),
+    SettingsPage(),
+  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +96,32 @@ class _BasicPageState extends State<BasicPage> {
       ),
 
        */
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: BottomNavigationBar(
+        unselectedItemColor: Colors.black,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_2),
+            label: 'Me',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.sports_soccer),
+            label: 'Activity',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+        currentIndex: selectedIndex,
+        selectedItemColor: Colors.blue,
+        onTap: _onItemTapped,
+      ),
+      /*
+      NavigationBar(
         onDestinationSelected: (int index) {
           setState(() {
             selectedIndex = index;
@@ -114,7 +158,10 @@ class _BasicPageState extends State<BasicPage> {
           ),
         ],
       ),
-      body: <Widget>[
+      */
+      body: _widgetOptions.elementAt(selectedIndex),
+      /*
+      <Widget>[
         /*
         Container(
           color: Colors.white,
@@ -148,7 +195,7 @@ class _BasicPageState extends State<BasicPage> {
         const ActPage(),
         const StatsPage(),
         const SettingsPage()
-      ][selectedIndex],
+      ][selectedIndex],*/
     );
   }
 }
@@ -163,6 +210,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   double? screenHeight;
   double? screenWidth;
+  final plainBottleRef = GlobalKey<WaterBottleState>();
+  static const addWater = 0.250;
+  bool waterInitiated = false;
 
   @override
   void initState() {
@@ -295,15 +345,65 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.white, // Color of the rectangle
                             borderRadius: BorderRadius.circular(20), // Adjust the radius as needed
                           ),
-                          child: const Center(
-                            child: Text(
-                              'Water consumption',
-                              style: TextStyle(
-                                color: Colors.black, // Text color
-                                fontSize: 20, // Text size
+                          child: Stack(
+                            children: [
+                              const Positioned(
+                                top: 5,
+                                left: 10,
+                                child: Text(
+                                  'Water consumption',
+                                  style: TextStyle(
+                                    color: Colors.black, // Text color
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,// Text size
+                                  ),
+
+                                ),
                               ),
-                            ),
-                          ),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: screenWidth! * 0.03,
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.remove),
+                                    onPressed: () {
+                                      var current = plainBottleRef.currentState?.waterLevel;
+                                      plainBottleRef.currentState?.waterLevel = current! - addWater / waterGoal;
+                                    },
+                                  ),
+                                  SizedBox(
+                                    width: screenWidth! * 0.2,
+                                  ),
+                                  Center(
+                                    //child: WaterTank(height: 100, width: 50, volume: 0.5,),
+                                    //child: WaterTank(height: 100, width: 50, volume: 0.5,),
+                                    child: SizedBox(
+                                      width: screenWidth! * 0.25,
+                                      height: screenHeight! * 0.17,
+                                      child: WaterBottle(
+                                          key: plainBottleRef,
+                                          waterColor: Colors.blue,
+                                          bottleColor: Colors.black,
+                                          capColor: Colors.grey
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: screenWidth! * 0.2,
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.add),
+                                    onPressed: () {
+                                      var current = plainBottleRef.currentState?.waterLevel;
+                                      plainBottleRef.currentState?.waterLevel = current! + addWater / waterGoal;
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+
                         ),
                         SizedBox(height: (screenHeight! * spacingConstant)),
                         Container(
