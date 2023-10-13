@@ -39,6 +39,8 @@ dependencies:
   percent_indicator: ^4.2.3
   sensors_plus: ^3.0.3
   water_bottle: ^0.0.7
+  sqflite: ^2.3.0
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:

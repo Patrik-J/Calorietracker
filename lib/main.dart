@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'StepCounter.dart';
 import 'calorie_indicator.dart';
 import 'dart:io';
 import 'setup.dart';
@@ -20,7 +21,7 @@ void _addConsumption() {
 ///idk
 const double widthConstant = 0.95;
 const double heightConstant = 0.25;
-const double spacingConstant = 0.05;
+const double spacingConstant = 0.02;
 double? _userScreenWidth;
 double caloriePercentage = 0.4;
 
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Calorie tracker',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white30),
         useMaterial3: true,
       ),
       home: const BasicPage(title: "Calorie Tracker"),//const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -117,7 +118,7 @@ class _BasicPageState extends State<BasicPage> {
           ),
         ],
         currentIndex: selectedIndex,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.greenAccent,
         onTap: _onItemTapped,
       ),
       /*
@@ -210,9 +211,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   double? screenHeight;
   double? screenWidth;
-  final plainBottleRef = GlobalKey<WaterBottleState>();
+  final plainBottleRef = GlobalKey<WaterTankState>();
   static const addWater = 0.250;
   bool waterInitiated = false;
+  late Widget waterbottle;
 
   @override
   void initState() {
@@ -224,6 +226,18 @@ class _HomePageState extends State<HomePage> {
       _userScreenWidth ??= screenWidth!;
       setState(() {}); // This will trigger a rebuild with the updated values.
     });
+    if (!waterInitiated) {
+      setState(() {
+        waterbottle = WaterTank(
+            key: plainBottleRef,
+            waterColor: Colors.blue,
+            bottleColor: Colors.black,
+            capColor: Colors.grey,
+        );
+        plainBottleRef.currentState?.waterLevel = 0.0;
+      });
+      waterInitiated = true;
+    }
   }
 
 
@@ -241,16 +255,16 @@ class _HomePageState extends State<HomePage> {
     } else {
       return Scaffold(
 
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: Colors.greenAccent,
         appBar: AppBar(
           elevation: 0.0,
-          backgroundColor: Colors.blueGrey,
-          systemOverlayStyle: const SystemUiOverlayStyle(systemNavigationBarColor: Colors.black, systemNavigationBarDividerColor: Colors.black, statusBarColor: Colors.blueGrey, statusBarBrightness: Brightness.light),
+          backgroundColor: Colors.greenAccent,
+          systemOverlayStyle: const SystemUiOverlayStyle(systemNavigationBarColor: Colors.white, systemNavigationBarDividerColor: Colors.white, statusBarColor: Colors.transparent, statusBarBrightness: Brightness.light),
           title: const Center (
           child: Text(
           'CalorieFit',
           style: TextStyle(
-          color: Colors.white,
+          color: Colors.deepPurple,
           fontSize: 30,
 
       ),
@@ -381,12 +395,7 @@ class _HomePageState extends State<HomePage> {
                                     child: SizedBox(
                                       width: screenWidth! * 0.25,
                                       height: screenHeight! * 0.17,
-                                      child: WaterBottle(
-                                          key: plainBottleRef,
-                                          waterColor: Colors.blue,
-                                          bottleColor: Colors.black,
-                                          capColor: Colors.grey
-                                      ),
+                                      child: waterbottle,//Text("Hier kommt der Wasserbehälter hin."),//waterbottle,
                                     ),
                                   ),
                                   SizedBox(
@@ -414,16 +423,37 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.white, // Color of the rectangle
                             borderRadius: BorderRadius.circular(20), // Adjust the radius as needed
                           ),
-                          child: const Center(
-                            child: Text(
+                          child: Stack(
+                            children: [
+                              const Positioned(
+                                top: 5,
+                                left: 10,
+                                child: Text(
+                                  'Daily activity',
+                                  style: TextStyle(
+                                    color: Colors.black, // Text color
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,// Text size
+                                  ),
+
+                                ),
+                              ),
+                              StepCounter(
+                                width: screenWidth! * 0.9,
+                                height: screenHeight! * 0.2,
+                              )
+                            ],
+                          ),
+                            /*Text(
                               'Daily activity',
                               style: TextStyle(
                                 color: Colors.black, // Text color
                                 fontSize: 20, // Text size
                               ),
-                            ),
+                            )
+                            */
                           ),
-                        ),
+
                         SizedBox(height: (screenHeight! * 0.05)),
                       ],
                     );

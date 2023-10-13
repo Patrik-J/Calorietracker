@@ -23,6 +23,8 @@ class WaterTank extends StatefulWidget {
 
 class WaterTankState extends State<WaterTank>
     with TickerProviderStateMixin, WaterContainer {
+  //get waterLevel => 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -79,13 +81,13 @@ class WaterBottlePainter extends CustomPainter {
   /// Bottle cap color
   final capColor;
 
-  WaterBottlePainter(
-      {Listenable? repaint,
-        required this.waves,
-        required this.bubbles,
-        required this.waterLevel,
-        required this.bottleColor,
-        required this.capColor})
+  WaterBottlePainter({Listenable? repaint,
+    required this.waves,
+    required this.bubbles,
+    required this.bottleColor,
+    required this.capColor,
+    required this.waterLevel,
+  })
       : super(repaint: repaint);
 
   @override
@@ -249,7 +251,7 @@ mixin class WaterContainer {
 
   static const WAVE_COUNT = 2;
 
-  static const BUBBLE_COUNT = 5;
+  static const BUBBLE_COUNT = 2;
 
   double waterLevel = 0.0;
 
@@ -321,7 +323,7 @@ class WaveLayer {
 
   double get offset => animation.value;
 
-  void init(TickerProvider provider, {int frequency = 10}) {
+  void init(TickerProvider provider, {int frequency = 100}) {
     controller = AnimationController(
       vsync: provider,
       duration: Duration(milliseconds: frequency),
